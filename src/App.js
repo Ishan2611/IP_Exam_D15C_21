@@ -1,25 +1,36 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import MovieCard from './MovieCard'; 
+import MovieDetail from './MovieDetail'; 
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  const [movies, setMovies] = useState([]);
 
+  useEffect(() => {
+      const fetchMovies = async () => {
+          const response = await fetch('http://localhost:5000/api/movies');
+          const data = await response.json();
+          setMovies(data);
+      };
+
+      fetchMovies();
+  }, []);
+  return (
+    <Router>
+        <div className="app">
+            <h1>Movie List</h1>
+            <div className="movie-list">
+                {movies.map((movie) => (
+                    <MovieCard key={movie.id} movie={movie} />
+                ))}
+            </div>
+            <Routes>
+                <Route path="/movies/:id" element={<MovieDetail movies={movies} />} />
+            </Routes>
+        </div>
+    </Router>
+);
+}
 export default App;
+
